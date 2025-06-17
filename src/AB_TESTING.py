@@ -13,9 +13,6 @@
 # bombabomba.com şimdi sizden bu A/B testinin sonuçlarını analiz etmenizi bekliyor.Bombabomba.com için
 # nihai başarı ölçütü Purchase'dır. Bu nedenle, istatistiksel testler için Purchasemetriğine odaklanılmalıdır.
 
-
-
-
 #####################################################
 # Veri Seti Hikayesi
 #####################################################
@@ -70,7 +67,8 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 # Görev 1:  Veriyi Hazırlama ve Analiz Etme
 #####################################################
 
-# Adım 1:  ab_testing_data.xlsx adlı kontrol ve test grubu verilerinden oluşan veri setini okutunuz. Kontrol ve test grubu verilerini ayrı değişkenlere atayınız.
+# Adım 1:  ab_testing_data.xlsx adlı kontrol ve test grubu verilerinden oluşan veri setini okutunuz. 
+# Kontrol ve test grubu verilerini ayrı değişkenlere atayınız.
 
 from pathlib import Path
 BASE_DIR   = Path(__file__).resolve().parents[1]          # proje kökü
@@ -155,7 +153,6 @@ print(purchase_means)
 
 
 # Adım 1: Hipotez testi yapılmadan önce varsayım kontrollerini yapınız.Bunlar Normallik Varsayımı ve Varyans Homojenliğidir.
-
 # Kontrol ve test grubunun normallik varsayımına uyup uymadığını Purchase değişkeni üzerinden ayrı ayrı test ediniz
 # Adım 1: Varsayım Kontrolleri
 #   - Normallik (Shapiro–Wilk)
