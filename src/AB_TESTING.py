@@ -66,19 +66,21 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 # - Normallik sağlanmıyorsa direkt 2 numara. Varyans homojenliği sağlanmıyorsa 1 numaraya arguman girilir.
 # - Normallik incelemesi öncesi aykırı değer incelemesi ve düzeltmesi yapmak faydalı olabilir.
 
-
-
-
 #####################################################
 # Görev 1:  Veriyi Hazırlama ve Analiz Etme
 #####################################################
 
 # Adım 1:  ab_testing_data.xlsx adlı kontrol ve test grubu verilerinden oluşan veri setini okutunuz. Kontrol ve test grubu verilerini ayrı değişkenlere atayınız.
-xls          = pd.ExcelFile("/Users/ozgegunes/Desktop/MIUUL_DATA_SCIENTIST_BOOTCAMP/04-measurement_problems_week_4/2025_06_10_measurement_problems/ab_testing/ABTesti/ab_testing.xlsx")
-control_df   = pd.read_excel(xls, "Control Group")
-test_df      = pd.read_excel(xls, "Test Group")
+
+from pathlib import Path
+BASE_DIR   = Path(__file__).resolve().parents[1]          # proje kökü
+DATA_PATH  = BASE_DIR / "data" / "ab_testing.xlsx"
+xls        = pd.ExcelFile(DATA_PATH)
+control_df = pd.read_excel(xls, "Control Group")
+test_df    = pd.read_excel(xls, "Test Group")
 test_df.head()
 control_df.head()
+
 # Adım 2: Kontrol ve test grubu verilerini analiz ediniz.
 
 # Kontrol ve test grubundaki temel metriklerin özet istatistikleri
@@ -97,34 +99,6 @@ print(desc_test.loc[['mean','std','min','max'], ['Purchase','Impression','Click'
 #Click – Ortalama	        5 100	          3 968
 #Earning – Ortalama (₺)	  1 908.6	        2 514.9
 
-# 1. Purchase – Ortalama (550.89 vs. 582.11)
-#Test grubunda ortalama satın alma sayısı (~582) kontrollere göre (~551) biraz daha yüksek.
-#Bu yaklaşık %5.6’lık ( (582.11−550.89)/550.89≈0.056 ) bir artış demek.
-# İlk bakışta iki varyasyonunun da satın almayı olumlu etkilediği izlenimi veriyor.
-
-# 2. Standart Sapma (134.11 vs. 161.15)
-#Test grubunda satın alma davranışı daha değişken: sapma ~161 iken kontrolde ~134.
-#Yani testte bazı kullanıcılar beklenenden çok daha fazla veya çok daha az satın almış; sonuçlar daha “dağınık”.
-
-# 3. Minimum – Maksimum (267–802 vs. 312–890)
-#Her iki grupta da uç değerler var, ama test grubunun hem alt hem üst değeri (312 ve 890) biraz daha geniş bir aralıkta.
-#Bu, test varyasyonunun bazı aşırı başarılı ve bazı zayıf performans gösteren alt-kümesi olabileceğini düşündürüyor.
-
-# 4. Impression – Ortalama (101 711 vs. 120 512)
-#Test grubunda gösterim sayısı ≈%18.5 daha yüksek.
-#Yani test varyasyonu kullanıcıların daha fazla görmesine yol açmış; belki teklif tipinizi, banner’ınızı veya segmentlemeyi değiştirdiniz.
-
-# 5. Click – Ortalama (5 100 vs. 3 968)
-#İlginç biçimde, testte tıklama adedi kontrolün altında (yaklaşık % 22 azalma).
-#CTR’yi (Click/Impression) hesaplarsak:
-# Kontrol CTR ≈ 5 100 / 101 711 ≈ %5.01 #tıklama oranı (Tıklama Sayısı / Gösterim Sayısı)
-# Test CTR ≈ 3 968 / 120 512 ≈ %3.29
-#Test varyasyonu daha fazla gösterime rağmen daha düşük oranda tıklama getiriyor.
-
-# 6. Earning – Ortalama (₺1 908.6 vs. ₺2 514.9)
-#Test grubunun geliri, kontrole göre yaklaşık %32 daha yüksek.
-#Bu artış hem impression ve purchase artışından hem de belki ortalama satın alma değerinin (basket size) yükselmesinden kaynaklanıyor olabilir.
-
 #özetle ;
 
 #Daha fazla gösterim (impression) → fakat daha düşük tıklama oranı (CTR):
@@ -142,9 +116,9 @@ print(desc_test.loc[['mean','std','min','max'], ['Purchase','Impression','Click'
 # Adım 3: Analiz işleminden sonra concat metodunu kullanarak kontrol ve test grubu verilerini birleştiriniz.
 
 df = pd.concat([control_df.assign(group="control"),
-               test_df.assign(group="test")], ignore_index=True) # Liste içindeki iki DataFrame’i (kontrol ve test) dikey olarak (satır bazında) “üst üste” koyar.
-                                                                 #ignore_index=True ile: her iki DataFrame’in eski indeksleri atılır ve birleştirilmiş sonuçta
-                                                                # 0’dan başlayıp 79’a kadar (eğer her grupta 40 gözlem varsa) yeni bir indeks oluşturulur.
+               test_df.assign(group="test")], ignore_index=True) 
+                                                                
+                                                                
 df.info()
 df.head(80)
 df.shape
@@ -168,7 +142,7 @@ print(f"Control Purchase Mean: {control_mean:.5f}")
 print(f"Test    Purchase Mean: {test_mean:.5f}")
 
 #birleştirilmiş dataframe üzerinden;
-purchase_means = df.groupby("group")["Purchase"].mean() #group değişkenindekilere göre kırılım yapar ve purchase değişkeninin ortalamasını alır.
+purchase_means = df.groupby("group")["Purchase"].mean() 
 print(purchase_means)
 
 #####################################################
